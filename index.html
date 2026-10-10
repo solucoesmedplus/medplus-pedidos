@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#0e3341">
+    <title>Med Plus+ | Pedidos</title>
+    <link rel="stylesheet" href="style.css?v=2.0.2">
+    <script src="config.js" defer></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body class="auth-locked">
+    <section id="loginScreen" class="login-screen" aria-label="Acesso ao sistema">
+      <div class="login-intro login-branding"><img class="login-branding-logo" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiU3J-LLB6bodx_q6Nzvij2FXKRUjl6-Wefi9HGKFSqUpmKyLmXFNnhR_sZ8qIMW5Y7jJQHyvO4GdDXep4RJjBm6GN7jVjv0ylDWj05Jomsivs6JLrNPsMZJAQDNbbCVB3E55SO5wD6-soJJMOk2TaFIEvyopP7aoNssNZpN3LhcLSmNQrsPv7HwDMaI7vi/s1600/MD%20Logo%20principal_Vertical.png" alt="Med Plus+" decoding="async"><span>GESTÃO COMERCIAL</span></div>
+      <div class="login-card"><img src="assets/logo.png" alt="Med Plus+" class="login-logo"><h2>Bem-vindo de volta</h2><p>Entre com seu usuário e senha para continuar.</p>
+        <form id="loginForm"><label>Usuário<input id="loginUser" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="80" autofocus></label>
+        <label>Senha<input id="loginPassword" name="password" type="password" autocomplete="current-password" required maxlength="72"></label>
+        <p id="loginError" class="error" role="alert"></p><button id="loginSubmit" class="primary" type="submit">Entrar no sistema</button></form>
+        <button id="retryLogin" class="retry-login" type="button">Tentar reconectar sessão</button>
+        <p class="hint">Esqueceu a senha? Solicite a redefinição ao administrador.</p>
+      </div>
+    </section>
+    <a class="skip" href="#main">Ir para o conteúdo</a>
+    
+    <aside class="sidebar">
+      <a class="brand" href="./" aria-label="Med Plus+ início">
+        <img src="assets/logo.png" alt="Med Plus+" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+        <strong hidden>MED PLUS<span>+</span></strong>
+      </a>
+      <p class="workspace">GESTÃO COMERCIAL</p>
+      <nav aria-label="Navegação principal">
+        <button class="nav active" id="navOrders"><span aria-hidden="true">▤</span> Pedidos</button>
+        <button class="nav" id="navNew"><span aria-hidden="true">＋</span> Novo pedido</button>
+        <button class="nav" id="navSettings"><span aria-hidden="true">⚙</span> Configurações</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="company-mark">M<span>+</span></div>
+        <strong>Med Plus+</strong>
+        <small>Compra e venda de equipamentos</small>
+        <span class="version">Sistema de pedidos • 2.0</span>
+      </div>
+    </aside>
+
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <span class="eyebrow">MED PLUS+</span>
+          <span class="breadcrumb">Comercial <span>/</span> Pedidos</span>
+        </div>
+        <div class="session-controls"><div class="session-identity"><strong id="sessionUser"></strong><small id="sessionRole"></small></div><button id="myPassword" title="Alterar minha senha">Minha senha</button><button id="logout">Sair</button></div>
+        <button class="connection" id="connection">
+          <span class="dot"></span>
+          <span id="connectionLabel">Não conectado</span>
+        </button>
+      </header>
+
+      <main id="main">
+        <section class="page-heading">
+          <div>
+            <p class="eyebrow">SUA OPERAÇÃO, ORGANIZADA</p>
+            <h1>Pedidos de compra e venda</h1>
+          </div>
+          <button class="primary" id="newOrder">＋ Novo pedido</button>
+        </section>
+
+        <div id="demoBanner" class="banner demo" hidden>
+          <div>
+            <strong>Modo demonstração</strong><br>
+            Dados fictícios salvos somente neste navegador. Não são enviados à planilha.
+          </div>
+          <button id="leaveDemo">Conectar planilha</button>
+        </div>
+
+        <div id="setupBanner" class="banner">
+          <div>
+            <strong>Seu sistema está pronto para conectar.</strong><br>
+            Informe a URL da API e sua chave para acessar os pedidos da planilha.
+          </div>
+          <div class="actions">
+            <button id="tryDemo">Experimentar demonstração</button>
+            <button class="primary" id="setup">Configurar conexão</button>
+          </div>
+        </div>
+
+        <section class="stats" aria-label="Resumo dos pedidos filtrados">
+          <article>
+            <span>Pedidos no período</span>
+            <strong id="statCount">0</strong>
+            <small id="statItems">0 equipamentos</small>
+          </article>
+          <article>
+            <span>Vendas</span>
+            <strong id="statSales">R$ 0,00</strong>
+            <small>Total dos pedidos de venda</small>
+          </article>
+          <article>
+            <span>Compras</span>
+            <strong id="statPurchases">R$ 0,00</strong>
+            <small>Total dos pedidos de compra</small>
+          </article>
+          <article>
+            <span>Em andamento</span>
+            <strong id="statOpen">0</strong>
+            <small>Rascunhos e confirmados</small>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <div>
+              <h2>Todos os pedidos</h2>
+              <p id="resultCount">Conecte sua planilha para começar.</p>
+            </div>
+            <button id="refresh" aria-label="Atualizar pedidos">↻ Atualizar</button>
+          </div>
+
+          <div class="filters">
+            <label class="search">
+              Buscar pedido
+              <input id="search" type="search" placeholder="Cliente, documento, vendedor ou equipamento…">
+            </label>
+            <label>
+              Tipo
+              <select id="typeFilter">
+                <option value="">Todos os tipos</option>
+                <option>Venda</option>
+                <option>Compra</option>
+              </select>
+            </label>
+            <label>
+              Situação
+              <select id="statusFilter">
+                <option value="">Todas</option>
+                <option>Rascunho</option>
+                <option>Confirmado</option>
+                <option>Concluído</option>
+                <option>Cancelado</option>
+              </select>
+            </label>
+            <label>De<input id="fromDate" type="date"></label>
+            <label>Até<input id="toDate" type="date"></label>
+            <button id="clearFilters">Limpar</button>
+          </div>
+
+          <div id="listStatus" role="status" class="list-status"></div>
+          
+          <div class="table-wrap">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Pedido / data</th>
+                  <th>Cliente</th>
+                  <th>Equipamentos</th>
+                  <th>Tipo / situação</th>
+                  <th>Total</th>
+                  <th><span class="sr-only">Ações</span></th>
+                </tr>
+              </thead>
+              <tbody id="ordersBody"></tbody>
+            </table>
+          </div>
+
+          <div id="empty" class="empty">
+            <div class="empty-icon" aria-hidden="true">▤</div>
+            <h3>Nenhum pedido por aqui</h3>
+            <p>Conecte sua planilha ou explore a demonstração.</p>
+          </div>
+
+          <footer class="list-footer">
+            <span id="pageInfo">0 pedidos</span>
+            <div class="actions">
+              <button id="prev" aria-label="Página anterior">←</button>
+              <button id="next" aria-label="Próxima página">→</button>
+            </div>
+          </footer>
+        </section>
+
+        <p class="footnote">MED PLUS+ • Gestão comercial <span id="syncInfo">Aguardando conexão</span></p>
+      </main>
+    </div>
+
+    <dialog id="adminDialog">
+      <form id="adminForm"><div class="dialog-head"><h2>Acesso às configurações</h2><button type="button" data-close="adminDialog" aria-label="Fechar">×</button></div>
+      <p>Confirme a senha da sua conta de administrador. Contas de usuário não têm acesso às configurações.</p>
+      <label>Senha do administrador<input id="adminPassword" type="password" autocomplete="current-password" required maxlength="72"></label>
+      <p id="adminError" class="error" role="alert"></p><div class="dialog-footer"><button class="primary" type="submit">Verificar senha</button></div></form>
+    </dialog>
+    <dialog id="settingsDialog" class="wide">
+      <div class="dialog-head"><div><p class="eyebrow">ADMINISTRAÇÃO</p><h2>Configurações e usuários</h2></div><button type="button" data-close="settingsDialog" aria-label="Fechar">×</button></div>
+      <label>API conectada<input id="apiUrl" type="url" readonly></label>
+      <p class="hint">A conexão é automática. Para mudar a API em todos os computadores, atualize a URL em config.js no GitHub. A autorização desta janela dura 5 minutos.</p>
+      <h3>Usuários cadastrados</h3><div class="table-wrap"><table><thead><tr><th>Usuário</th><th>Acesso</th><th>Ação</th></tr></thead><tbody id="accountList"></tbody></table></div>
+      <form id="userForm"><div class="section-label section-between"><h3 id="userFormTitle">Cadastrar usuário</h3><button type="button" id="newUser">Novo usuário</button></div>
+      <div class="form-grid"><label>Usuário<input id="userLogin" autocomplete="off" pattern="[a-zA-Z0-9._@\-]{3,80}" required maxlength="80"></label>
+      <label>Nome<input id="userName" required maxlength="120" autocomplete="off"></label>
+      <label>Perfil<select id="userRole"><option value="USUARIO">Usuário</option><option value="ADMIN">Administrador</option></select></label>
+      <label>Nova senha<input id="userPassword" type="password" minlength="8" maxlength="72" autocomplete="new-password" required></label></div>
+      <label class="check-label"><input id="userActive" type="checkbox" checked> Acesso ativo</label>
+      <label class="check-label"><input id="userForcePassword" type="checkbox" checked> Exigir troca de senha no próximo login</label>
+      <p class="hint">Senhas iniciais ou redefinidas exigem troca no próximo login. Ao editar, deixe a senha vazia para manter a atual. Alterações encerram as sessões anteriores do usuário. Senhas precisam de pelo menos 8 caracteres.</p>
+      <p id="settingsError" class="error" role="alert"></p><div class="dialog-footer"><button class="primary" type="submit">Salvar usuário</button></div></form>
+    </dialog>
+    <dialog id="passwordDialog"><form id="passwordForm"><div class="dialog-head"><h2>Alterar minha senha</h2><button type="button" data-close="passwordDialog" aria-label="Fechar">×</button></div>
+      <p id="passwordNotice" class="hint"></p><button id="passwordLogout" type="button" hidden>Sair e entrar depois</button><label>Senha atual<input id="currentPassword" type="password" required maxlength="72" autocomplete="current-password"></label>
+      <label>Nova senha<input id="newPassword" type="password" minlength="8" maxlength="72" required autocomplete="new-password"></label>
+      <label>Repita a nova senha<input id="repeatPassword" type="password" minlength="8" maxlength="72" required autocomplete="new-password"></label>
+      <p id="passwordError" class="error" role="alert"></p><div class="dialog-footer"><button class="primary" type="submit">Alterar senha</button></div></form></dialog>
+
+    <dialog id="orderDialog" class="wide">
+      <form id="orderForm">
+        <div class="dialog-head">
+          <div>
+            <p class="eyebrow">GESTÃO COMERCIAL</p>
+            <h2 id="orderTitle">Novo pedido</h2>
+          </div>
+          <button type="button" id="closeOrder" aria-label="Fechar">×</button>
+        </div>
+        
+        <div class="section-label"><span>01</span> Informações do pedido</div>
+        <div class="form-grid">
+          <label>
+            Tipo de pedido
+            <select name="tipo">
+              <option>Venda</option>
+              <option>Compra</option>
+            </select>
+          </label>
+          <label>Data<input name="data" type="date" required></label>
+          <label>
+            Situação
+            <select name="status">
+              <option>Rascunho</option>
+              <option>Confirmado</option>
+              <option>Concluído</option>
+              <option>Cancelado</option>
+            </select>
+          </label>
+          <label>Vendedor / responsável<input name="vendedor" maxlength="120" required placeholder="Nome do responsável"></label>
+        </div>
+
+        <div class="section-label"><span>02</span> Cliente / fornecedor</div>
+        <div class="form-grid">
+          <label class="span2">
+            Cliente / razão social
+            <input name="cliente" required maxlength="200" placeholder="Nome completo ou razão social">
+          </label>
+          <label>Documento (CPF / CNPJ)<input name="documento" required maxlength="30" placeholder="CPF, CNPJ ou outro documento"></label>
+          <label>Nome fantasia<input name="fantasia" maxlength="200" placeholder="Opcional"></label>
+        </div>
+
+        <div class="section-label section-between">
+          <div><span>03</span> Equipamentos</div>
+          <button id="addItem" type="button">＋ Adicionar equipamento</button>
+        </div>
+        
+        <div id="items"></div>
+        
+        <div class="order-total">
+          <span>Total do pedido</span>
+          <strong id="formTotal">R$ 0,00</strong>
+        </div>
+        
+        <label>
+          Observações / condições comerciais
+          <textarea name="observacoes" rows="3" maxlength="3000" placeholder="Prazo, pagamento, entrega e outras informações…"></textarea>
+        </label>
+        
+        <p id="orderError" class="error" role="alert"></p>
+        
+        <div class="dialog-footer">
+          <button type="button" id="cancelOrder">Cancelar</button>
+          <button class="primary" id="saveOrder" type="submit">Salvar pedido</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="detailDialog" class="wide">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">DOCUMENTO DO PEDIDO</p>
+          <h2>Visualizar pedido</h2>
+        </div>
+        <button data-close="detailDialog" aria-label="Fechar">×</button>
+      </div>
+      <div id="detailContent"></div>
+      <div class="dialog-footer">
+        <button id="detailEdit">Editar pedido</button>
+        <button class="primary" id="printOrder">Imprimir / salvar PDF</button>
+      </div>
+    </dialog>
+
+    <dialog id="confirmDialog">
+      <div class="dialog-head">
+        <h2>Excluir pedido?</h2>
+        <button data-close="confirmDialog" aria-label="Fechar">×</button>
+      </div>
+      <p id="deleteText"></p>
+      <p class="hint">O pedido sairá das consultas. Uma cópia permanece marcada como excluída na planilha.</p>
+      <p id="deleteError" class="error" role="alert"></p>
+      <div class="dialog-footer">
+        <button data-close="confirmDialog">Voltar</button>
+        <button class="danger" id="confirmDelete">Excluir pedido</button>
+      </div>
+    </dialog>
+
+    <div id="toast" role="status" hidden></div>
+    <section id="printArea" aria-label="Pedido para impressão"></section>
+  </body>
+</html>
